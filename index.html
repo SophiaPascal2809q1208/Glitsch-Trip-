@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Soccer Devil 3D - Level Devil Edition</title>
+    <title>Soccer Devil 3D - Fixed Edition</title>
     <style>
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; 
-            font-family: 'Arial Black', sans-serif; background-color: #111;
+            font-family: 'Arial Black', sans-serif; background-color: #1a0505;
             user-select: none; -webkit-user-select: none;
         }
         #hud {
@@ -19,6 +19,15 @@
             color: #ff1744; font-size: 60px; font-weight: bold; z-index: 50;
             text-shadow: 4px 4px 0px #000; transform: scale(0.8); animation: popUp 0.3s forwards;
         }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
         @keyframes popUp { to { transform: scale(1); } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -29,40 +38,201 @@
     <div id="announcement">VERLOREN!</div>
 
     <script>
-        const hudLevel = document.getElementById('level-ui');
-        const hudDeaths = document.getElementById('deaths-ui');
-        const announcement = document.getElementById('announcement');
+        // Sicherstellen, dass das Skript erst läuft, wenn Three.js UND das HTML bereit sind
+        window.addEventListener('DOMContentLoaded', () => {
+            const hudLevel = document.getElementById('level-ui');
+            const hudDeaths = document.getElementById('deaths-ui');
+            const announcement = document.getElementById('announcement');
 
-        let scene, camera, renderer, clock;
-        let player, targetGoal;
-        let obstacles = [];
-        let currentLevel = 1;
-        let deaths = 0;
+            let scene, camera, renderer, clock;
+            let player, targetGoal;
+            let obstacles = [];
+            let currentLevel = 1;
+            let deaths = 0;
+            let gameState = "PLAY";
 
-        // Tasten-Abfrage (Ermöglicht gleichzeitiges Drücken)
-        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, " ": false };
+            const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, " ": false };
 
-        // Spieler-Physik
-        let playerVelocity = new THREE.Vector3();
-        const playerSpeed = 7;
-        const jumpForce = 10;
-        const gravity = 28;
-        let isGrounded = false;
+            let playerVelocity = new THREE.Vector3();
+            const playerSpeed = 7;
+            const jumpForce = 10;
+            const gravity = 28;
+            let isGrounded = false;
 
-        // Level Devil Variablen (Für Fallen)
-        let trapTriggered = false;
-        let hiddenWall;
+            let trapTriggered = false;
+            let hiddenWall;
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a0505); // Düstere Atmosphäre
-            scene.fog = new THREE.FogExp2(0x1a0505, 0.02);
+            function init() {
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x1a0505);
+                scene.fog = new THREE.FogExp2(0x1a0505, 0.02);
 
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            document.body.appendChild(renderer.domElement);
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+                
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.shadowMap.enabled = true;
+                // Canvas explizit an den Body anhängen
+                document.body.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); scene.add(ambientLight);
-            const dirLight = new THREE.DirectionalLight(0xffffff,
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); scene.add(ambientLight);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8); dirLight.position.set(5, 20, 10); dirLight.castShadow = true; scene.add(dirLight);
+
+                buildCharacter();
+                loadLevel(1);
+
+                clock = new THREE.Clock();
+
+                window.addEventListener('keydown', (e) => { if(e.key in keys) keys[e.key] = true; if(e.key === " ") e.preventDefault(); });
+                window.addEventListener('keyup', (e) => { if(e.key in keys) keys[e.key] = false; });
+
+                animate();
+            }
+
+            function buildCharacter() {
+                player = new THREE.Group();
+                const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.4), new THREE.MeshStandardMaterial({ color: 0x0d47a1 })); torso.position.y = 0.75; torso.castShadow = true; player.add(torso);
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0xffdbac })); head.position.y = 1.3; player.add(head);
+                const cap = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.1, 0.44), new THREE.MeshStandardMaterial({ color: 0xb71c1c })); cap.position.set(0, 1.5, 0.05); player.add(cap);
+                const visor = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.04, 0.2), new THREE.MeshStandardMaterial({ color: 0xb71c1c })); visor.position.set(0, 1.48, -0.25); player.add(visor);
+                const legL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.4, 0.2), new THREE.MeshStandardMaterial({ color: 0xffffff })); legL.position.set(-0.15, 0.2, 0); player.add(legL);
+                const legR = legL.clone(); legR.position.x = 0.15; player.add(legR);
+                scene.add(player);
+            }
+
+            function loadLevel(num) {
+                currentLevel = num;
+                hudLevel.innerText = currentLevel;
+                trapTriggered = false;
+
+                obstacles.forEach(o => scene.remove(o));
+                obstacles = [];
+                if(targetGoal) scene.remove(targetGoal);
+
+                let pitchMat = new THREE.MeshStandardMaterial({ color: 0x27ae60, roughness: 0.8 });
+                
+                if (currentLevel === 1) {
+                    let part1 = new THREE.Mesh(new THREE.PlaneGeometry(10, 15), pitchMat); part1.rotation.x = -Math.PI/2; part1.position.set(0, 0, 7.5); part1.receiveShadow = true; scene.add(part1); obstacles.push(part1);
+                    let part2 = new THREE.Mesh(new THREE.PlaneGeometry(10, 15), pitchMat); part2.rotation.x = -Math.PI/2; part2.position.set(0, 0, -7.5); part2.receiveShadow = true; scene.add(part2); obstacles.push(part2);
+                    let bridge = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 6), new THREE.MeshStandardMaterial({ color: 0x1e824c })); bridge.position.set(0, 0, 0); bridge.name = "trap_bridge"; scene.add(bridge); obstacles.push(bridge);
+                    player.position.set(0, 0.1, 12);
+                } 
+                else if (currentLevel === 2) {
+                    let track = new THREE.Mesh(new THREE.PlaneGeometry(6, 40), pitchMat); track.rotation.x = -Math.PI/2; track.position.set(0, 0, 0); track.receiveShadow = true; scene.add(track); obstacles.push(track);
+                    hiddenWall = new THREE.Mesh(new THREE.BoxGeometry(6, 5, 1), new THREE.MeshStandardMaterial({ color: 0xb71c1c })); hiddenWall.position.set(0, -3, -5); hiddenWall.name = "hidden_wall"; scene.add(hiddenWall); obstacles.push(hiddenWall);
+
+                    let spikeMat = new THREE.MeshStandardMaterial({ color: 0xff1744 });
+                    for(let z = -15; z <= 15; z+=4) {
+                        let spikeL = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1, 4), spikeMat); spikeL.position.set(-3.2, 0.5, z); scene.add(spikeL); obstacles.push(spikeL);
+                        let spikeR = spikeL.clone(); spikeR.position.x = 3.2; scene.add(spikeR); obstacles.push(spikeR);
+                    }
+                    player.position.set(0, 0.1, 16);
+                }
+                else if (currentLevel === 3) {
+                    let lava = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), new THREE.MeshBasicMaterial({ color: 0xff3d00 })); lava.rotation.x = -Math.PI/2; lava.position.y = -2; scene.add(lava); obstacles.push(lava);
+                    let stepPositions = [14, 9, 4, -1, -6, -11];
+                    stepPositions.forEach((z, idx) => {
+                        let sizeX = (idx % 2 === 0) ? 3 : 1.5;
+                        let step = new THREE.Mesh(new THREE.BoxGeometry(sizeX, 4, 2), pitchMat);
+                        step.position.set((Math.sin(idx) * 2), -1.9, z);
+                        scene.add(step); obstacles.push(step);
+                    });
+                    player.position.set(0, 0.2, 14);
+                }
+
+                targetGoal = new THREE.Group();
+                const postMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+                const pL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.5), postMat); pL.position.set(-2, 1.25, -14);
+                const pR = pL.clone(); pR.position.x = 2;
+                const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4), postMat); bar.rotation.z = Math.PI/2; bar.position.set(0, 2.5, -14);
+                targetGoal.add(pL, pR, bar); scene.add(targetGoal);
+            }
+
+            function fail() {
+                gameState = "DEAD";
+                deaths++;
+                hudDeaths.innerText = deaths;
+                announcement.style.display = "block";
+                setTimeout(() => {
+                    loadLevel(currentLevel);
+                    gameState = "PLAY";
+                }, 1200);
+            }
+
+            function win() {
+                if(currentLevel < 3) {
+                    loadLevel(currentLevel + 1);
+                } else {
+                    announcement.innerText = "GEWONNEN!";
+                    announcement.style.color = "#4caf50";
+                    announcement.style.display = "block";
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if(gameState !== "PLAY") return;
+
+                let dt = clock.getDelta();
+                if(dt > 0.1) dt = 0.1;
+
+                let moveX = 0;
+                let moveZ = 0;
+
+                if (keys.w || keys.ArrowUp) moveZ -= 1;
+                if (keys.s || keys.ArrowDown) moveZ += 1;
+                if (keys.a || keys.ArrowLeft) moveX -= 1;
+                if (keys.d || keys.ArrowRight) moveX += 1;
+
+                if (moveX !== 0 || moveZ !== 0) {
+                    let length = Math.hypot(moveX, moveZ);
+                    player.position.x += (moveX / length) * playerSpeed * dt;
+                    player.position.z += (moveZ / length) * playerSpeed * dt;
+                    player.rotation.y = Math.atan2(moveX, moveZ);
+                }
+
+                if (currentLevel === 1 && player.position.z < 4 && !trapTriggered) {
+                    trapTriggered = true;
+                }
+                if (currentLevel === 1 && trapTriggered) {
+                    let b = scene.getObjectByName("trap_bridge");
+                    if(b) b.position.y -= 15 * dt;
+                }
+
+                if (currentLevel === 2 && player.position.z < 2) {
+                    if(hiddenWall && hiddenWall.position.y < 2.5) hiddenWall.position.y += 30 * dt;
+                }
+
+                playerVelocity.y -= gravity * dt;
+                player.position.y += playerVelocity.y * dt;
+
+                isGrounded = false;
+                obstacles.forEach(o => {
+                    let box = new THREE.Box3().setFromObject(o);
+                    let pBox = new THREE.Box3().setFromObject(player);
+
+                    if (pBox.intersectsBox(box) && playerVelocity.y <= 0 && player.position.y >= box.max.y - 0.3) {
+                        player.position.y = box.max.y;
+                        playerVelocity.y = 0;
+                        isGrounded = true;
+                    }
+                });
+
+                if (keys[" "] && isGrounded) {
+                    playerVelocity.y = jumpForce;
+                    isGrounded = false;
+                }
+
+                if (player.position.y < -5) fail();
+                if (currentLevel === 2 && Math.abs(player.position.x) > 2.6) fail();
+                if (currentLevel === 2 && hiddenWall && Math.abs(player.position.z - hiddenWall.position.z) < 0.6 && player.position.y < 3) fail();
+
+                if (player.position.z <= -13.5 && Math.abs(player.position.x) < 2) win();
+
+                camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y + 4.5, player.position.z + 7), 0.1);
+                camera.lookAt(new THREE.Vector3(player.position.x, player.position.y + 1, player.position.z - 2));
+
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize',
