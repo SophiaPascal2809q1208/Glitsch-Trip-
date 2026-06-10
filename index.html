@@ -228,7 +228,7 @@ function initAllLevels() {
     // L5
     levels.push({ name: "BRIDGE OF DECEIT", bg: p1Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:350, height:180, col:p1Plat, line:p1Line},
-        {type:"troll_fall", x:350, y:300, width:100, height:180, col:p1Plat, line:p1Line, state:"idle", speed:0},
+        {type:"troll_fall", x:350, y:300, width:100, height:180, col:p1Plat, line:p1Line, state:"idle", speed:0, startY:300, timer:0},
         {type:"plat", x:450, y:300, width:350, height:180, col:p1Plat, line:p1Line}
     ] });
 
@@ -248,12 +248,11 @@ function initAllLevels() {
     // L8
     levels.push({ name: "CRUMBLY EDGE", bg: p1Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:260, height:180, col:p1Plat, line:p1Line},
-        {type:"troll_fall", x:260, y:300, width:60, height:180, col:"#b33939", line:p1Line, state:"idle", speed:0},
+        {type:"troll_fall", x:260, y:300, width:60, height:180, col:"#b33939", line:p1Line, state:"idle", speed:0, startY:300, timer:0},
         {type:"plat", x:460, y:300, width:340, height:180, col:p1Plat, line:p1Line}
     ] });
 
-    // L9: FIX! Die Rakete wartet jetzt kurz (wackelt), bevor sie hochschießt. 
-    // So hat man genug Zeit zu reagieren und weiterzuspringen!
+    // L9
     levels.push({ name: "THE BAIT PLATFORM", bg: p1Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:220, height:180, col:p1Plat, line:p1Line},
         {type:"rocket_launcher", x:320, y:300, width:140, height:25, col:p1Line, line:"#ff007f", state:"idle", speed:0, delayTimer:0, shakeX: 0},
@@ -267,60 +266,72 @@ function initAllLevels() {
     ] });
 
     // Part 2
+    // L11
     levels.push({ name: "BRAIN MELT", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: true, flip: false, objs: [
         {type:"plat", x:0, y:300, width:250, height:180, col:p2Plat, line:p2Line},
-        {type:"troll_fall", x:310, y:300, width:140, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0},
+        {type:"troll_fall", x:310, y:300, width:140, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0, startY:300, timer:0},
         {type:"plat", x:520, y:300, width:280, height:180, col:p2Plat, line:p2Line}
     ] });
 
+    // L12
     levels.push({ name: "THE STAMPER", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:800, height:180, col:p2Plat, line:p2Line},
         {type:"falling_wall", x:380, y:-340, width:90, height:420, col:p2Plat, triggerX:220, speed:13, state:"idle", startY:-340, timer:0}
     ] });
 
-    levels.push({ name: "UPSIDE DOWN", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: true, objs: [
-        {type:"plat", x:0, y:300, width:200, height:180, col:p2Plat, line:p2Line},
-        {type:"midair_troll", x:260, y:-120, width:80, height:240, col:"#ff007f", triggerX:130, active:false, state:"falling", startY:-120, stopY:100},
-        {type:"shifting_chasm", x:420, y:300, width:380, height:180, col:p2Plat, line:p2Line, triggerX:200, shiftX:60, currentShift:0, state:"idle", startX:420}
+    // L13
+    levels.push({ name: "THE LOOPHOLE", bg: p2Bg, start: {x:120, y:230}, goal: {x:710, y:240}, trollGoal: "screen_wrap", invert: false, flip: true, objs: [
+        {type:"plat", x:0, y:300, width:260, height:180, col:p2Plat, line:p2Line},
+        {type:"troll_fall", x:370, y:300, width:140, height:180, col:p2Plat, line:p2Line, state:"idle", speed:0, startY:300, timer:0},
+        {type:"plat", x:600, y:300, width:200, height:180, col:p2Plat, line:p2Line}
     ] });
 
+    // L14
     levels.push({ name: "RUNAWAY DOOR", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: true, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:800, height:180, col:p2Plat, line:p2Line},
     ] });
 
+    // L15
     levels.push({ name: "DON'T LINGER", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
-        {type:"plat", x:0, y:300, width:200, height:180, col:p2Plat, line:p2Line},
-        {type:"troll_fall", x:200, y:300, width:380, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0},
-        {type:"plat", x:580, y:300, width:220, height:180, col:p2Plat, line:p2Line}
+        {type:"plat", x:0, y:300, width:270, height:180, col:p2Plat, line:p2Line},
+        {type:"troll_fall", x:270, y:300, width:260, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0, startY:300, timer:0},
+        {type:"plat", x:530, y:300, width:270, height:180, col:p2Plat, line:p2Line}
     ] });
 
+    // L16
     levels.push({ name: "DOOR SURPRISE", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:240, height:180, col:p2Plat, line:p2Line},
-        {type:"troll_fall", x:240, y:300, width:220, height:180, col:p2Plat, line:p2Line, state:"idle", speed:0},
+        {type:"troll_fall", x:240, y:300, width:220, height:180, col:p2Plat, line:p2Line, state:"idle", speed:0, startY:300, timer:0},
         {type:"plat", x:460, y:300, width:340, height:180, col:p2Plat, line:p2Line},
-        {type:"surprise_spike", x:620, y:300, width:35, height:40, col:"#ff007f", triggerX:520, active:false}
+        {type:"surprise_spike", x:620, y:450, width:35, height:40, col:"#ff007f", triggerX:520, active:false}
     ] });
 
+    // L17
     levels.push({ name: "PHANTOM HOLE", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
-        {type:"plat", x:0, y:300, width:220, height:180, col:p2Plat, line:p2Line},
-        {type:"fake_visible_block", x:220, y:300, width:260, height:180, col:p2Plat, line:p2Line}, 
-        {type:"plat", x:480, y:300, width:320, height:180, col:p2Plat, line:p2Line}
+        {type:"plat", x:0, y:300, width:280, height:180, col:p2Plat, line:p2Line},
+        {type:"fake_visible_block", x:280, y:300, width:140, height:180, col:p2Plat, line:p2Line}, 
+        {type:"plat", x:420, y:300, width:380, height:180, col:p2Plat, line:p2Line}
     ] });
 
+    // L18
     levels.push({ name: "TWIN CRUSHERS", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: false, invert: false, flip: false, objs: [
         {type:"plat", x:0, y:300, width:800, height:180, col:p2Plat, line:p2Line},
         {type:"falling_wall", x:250, y:-340, width:80, height:420, col:p2Plat, triggerX:100, speed:14, state:"idle", startY:-340, timer:0},
         {type:"falling_wall", x:500, y:-340, width:80, height:420, col:p2Plat, triggerX:340, speed:14, state:"idle", startY:-340, timer:0}
     ] });
 
+    // L19 - TRIPPLE-TRIGGER FÜR ZURÜCKLAUFEN: triggerX auf 480 gesetzt, reagiert aber erst, wenn das Ziel gesprungen ist (lvl.goal.x === 40)
     levels.push({ name: "THE SWITCH BACK", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: "teleport", invert: true, flip: false, objs: [
-        {type:"plat", x:0, y:300, width:800, height:180, col:p2Plat, line:p2Line}
+        {type:"plat", x:0, y:300, width:550, height:180, col:p2Plat, line:p2Line},
+        {type:"shifting_chasm", x:550, y:300, width:140, height:180, col:p2Plat, line:p2Line, triggerX:480, shiftX:140, currentShift:0, state:"idle", startX:550, onlyOnReturn: true},
+        {type:"plat", x:690, y:300, width:110, height:180, col:p2Plat, line:p2Line}
     ] });
 
+    // L20
     levels.push({ name: "THE APEX ABYSS", bg: p2Bg, start: {x:80, y:230}, goal: {x:710, y:240}, trollGoal: "up_and_away", invert: true, flip: true, objs: [
         {type:"plat", x:0, y:300, width:200, height:180, col:p2Plat, line:p2Line},
         {type:"shifting_chasm", x:200, y:300, width:150, height:180, col:p2Plat, line:p2Line, triggerX:120, shiftX:50, currentShift:0, state:"idle", startX:200},
-        {type:"troll_fall", x:350, y:300, width:120, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0},
+        {type:"troll_fall", x:350, y:300, width:120, height:180, col:"#ff007f", line:p2Line, state:"idle", speed:0, startY:300, timer:0},
         {type:"falling_wall", x:580, y:-340, width:80, height:420, col:p2Plat, triggerX:420, speed:16, state:"idle", startY:-340, timer:0},
         {type:"plat", x:580, y:300, width:220, height:180, col:p2Plat, line:p2Line}
     ] });
@@ -474,11 +485,10 @@ function update() {
         if (obj.type === "midair_troll" && player.x > obj.triggerX && !obj.active) { 
             obj.active = true; playBeep(180, 'sawtooth', 0.2);
         } 
-        
         if (obj.type === "midair_troll" && obj.active && obj.state === "falling") {
-            obj.y += 12; if (obj.y >= obj.stopY) { obj.y = obj.stopY; obj.state = "rising"; }
+            obj.y += 7.5; if (obj.y >= obj.stopY) { obj.y = obj.stopY; obj.state = "rising"; }
         } else if (obj.type === "midair_troll" && obj.active && obj.state === "rising") {
-            obj.y -= 4; if (obj.y <= obj.startY) { obj.y = obj.startY; obj.state = "falling"; obj.active = false; }
+            obj.y -= 3; if (obj.y <= obj.startY) { obj.y = obj.startY; obj.state = "falling"; obj.active = false; }
         }
 
         if (obj.type === "sudden_abyss") {
@@ -497,13 +507,11 @@ function update() {
             }
         }
 
-        // Modifizierte Rocket Launcher Logik (Level 9) mit Delay & Visuellem Feedback
         if (obj.type === "rocket_launcher") {
             if (obj.state === "warning") {
                 obj.delayTimer++;
-                // Lässt die Plattform heftig zittern als Warnung
                 obj.shakeX = (obj.delayTimer % 2 === 0) ? 4 : -4; 
-                if (obj.delayTimer > 28) { // ca. 0.5 Sekunden Reaktionsfenster
+                if (obj.delayTimer > 28) { 
                     obj.state = "flying";
                     obj.shakeX = 0;
                     playBeep(320, 'sawtooth', 0.5);
@@ -514,17 +522,45 @@ function update() {
             }
         }
 
-        if (obj.type === "shifting_chasm" && player.x > obj.triggerX && obj.state === "idle") {
-            obj.state = "shifting_back"; playBeep(200, 'triangle', 0.15);
-        }
-        if (obj.type === "shifting_chasm" && obj.state === "shifting_back") {
-            obj.currentShift += 3; obj.x += 3; if (obj.currentShift >= obj.shiftX) { obj.state = "shifting_forward"; }
-        } else if (obj.type === "shifting_chasm" && obj.state === "shifting_forward") {
-            obj.currentShift -= 1.5; obj.x -= 1.5; if (obj.currentShift <= 0) { obj.currentShift = 0; obj.x = obj.startX; obj.state = "done"; }
+        // SHIFTING CHASM LOGIK FÜR LEVEL 19 REFORMT (Erst beim Zurücklaufen)
+        if (obj.type === "shifting_chasm") {
+            let canTrigger = true;
+            if (obj.onlyOnReturn && lvl.goal.x !== 40) {
+                canTrigger = false; // Trigger blockiert, solange das Ziel noch nicht auf der linken Seite ist
+            }
+
+            if (player.x < obj.triggerX && obj.state === "idle" && canTrigger && player.velX < 0) {
+                obj.state = "shifting_back"; playBeep(200, 'triangle', 0.15);
+            }
+            
+            if (obj.state === "shifting_back") {
+                obj.currentShift += 4; obj.x += 4; if (obj.currentShift >= obj.shiftX) { obj.state = "waiting"; obj.timer = 0; }
+            } else if (obj.state === "waiting") {
+                obj.timer++; if (obj.timer > 25) { obj.state = "shifting_forward"; }
+            } else if (obj.type === "shifting_chasm" && obj.state === "shifting_forward") {
+                obj.currentShift -= 2; obj.x -= 2; if (obj.currentShift <= 0) { obj.currentShift = 0; obj.x = obj.startX; obj.state = "idle"; }
+            }
         }
 
-        if (obj.type === "surprise_spike" && player.x > obj.triggerX) { if(!obj.active) playBeep(350, 'sawtooth', 0.1); obj.active = true; obj.y = 250; }
-        if (obj.type === "troll_fall" && obj.state === "falling") { obj.speed += 0.45; obj.y += obj.speed; }
+        if (obj.type === "surprise_spike" && player.x > obj.triggerX) { 
+            if(!obj.active) playBeep(350, 'sawtooth', 0.1); 
+            obj.active = true; 
+            obj.y = 250; 
+        }
+        
+        if (obj.type === "troll_fall") {
+            if (obj.state === "falling") { 
+                obj.speed += 0.45; 
+                obj.y += obj.speed; 
+                if (obj.y > 540) { obj.state = "waiting"; obj.timer = 0; }
+            } else if (obj.state === "waiting") {
+                obj.timer++;
+                if (obj.timer > 30) { obj.state = "rising"; }
+            } else if (obj.state === "rising") {
+                obj.y -= 8;
+                if (obj.y <= obj.startY) { obj.y = obj.startY; obj.state = "idle"; obj.speed = 0; }
+            }
+        }
 
         if (obj.type === "falling_wall") {
             if (obj.state === "idle" && player.x > obj.triggerX) { obj.state = "falling"; playBeep(120, 'sawtooth', 0.35); }
@@ -542,17 +578,18 @@ function update() {
             }
             if (obj.type === "troll_fall" && obj.state === "idle") { obj.state = "falling"; playBeep(150, 'triangle', 0.2); }
             
-            // Berührung aktiviert erst den Warning-Zustand (Wackeln)
             if (obj.type === "rocket_launcher" && obj.state === "idle") {
                 obj.state = "warning";
                 playBeep(240, 'square', 0.15);
             }
 
-            if (player.y + player.height - player.velY <= obj.y + 16) {
-                player.grounded = true; player.jumping = false; player.velY = 0; player.y = obj.y - player.height;
-                if(obj.type === "troll_fall") player.y += obj.speed;
-                if(obj.type === "rocket_launcher" && obj.state === "flying") player.y -= obj.speed; 
-            } else { player.velX = 0; }
+            if (obj.state !== "rising" && obj.state !== "waiting") {
+                if (player.y + player.height - player.velY <= obj.y + 16) {
+                    player.grounded = true; player.jumping = false; player.velY = 0; player.y = obj.y - player.height;
+                    if(obj.type === "troll_fall" && obj.state === "falling") player.y += obj.speed;
+                    if(obj.type === "rocket_launcher" && obj.state === "flying") player.y -= obj.speed; 
+                } else { player.velX = 0; }
+            }
         }
     }
     
@@ -560,7 +597,17 @@ function update() {
     
     if (player.y < 0) { handleDeath(); return; }
     if (player.y > 380 || player.y > canvas.height) { handleDeath(); return; }
-    if (player.x < 0) player.x = 0; if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+    
+    if (lvl.trollGoal === "screen_wrap") {
+        if (player.x < 1) { 
+            player.x = canvas.width - player.width - 25; 
+            player.y = 200; 
+            playBeep(450, 'sine', 0.15);
+        }
+    } else {
+        if (player.x < 0) player.x = 0;
+    }
+    if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
 
     if (player.x < lvl.goal.x + 35 && player.x + player.width > lvl.goal.x && player.y < lvl.goal.y + 60 && player.y + player.height > lvl.goal.y) {
         handleWin(); return;
@@ -612,10 +659,12 @@ function draw() {
     }
 
     for (let obj of lvl.objs) {
+        if (obj.type === "surprise_spike" && !obj.active) continue;
+
         let renderX = obj.x + (obj.shakeX || 0);
         ctx.fillStyle = obj.col; ctx.fillRect(renderX, obj.y, obj.width, obj.height);
         
-        if(obj.type === "plat" || obj.type === "troll_fall" || obj.type === "shifting_chasm" || obj.type === "fake_visible_block" || obj.type === "midair_troll" || obj.type === "sudden_abyss" || obj.type === "rocket_launcher") { 
+        if(obj.type === "plat" || obj.type === "troll_fall" || obj.type === "shifting_chasm" || obj.type === "fake_visible_block" || obj.type === "midair_troll" || obj.type === "sudden_abyss" || obj.type === "rocket_launcher" || obj.type === "surprise_spike") { 
             ctx.fillStyle = obj.line || "#ff007f"; ctx.fillRect(renderX, obj.y, obj.width, 7); 
         }
 
